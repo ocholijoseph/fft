@@ -1,0 +1,37 @@
+import 'dotenv/config'
+import express from 'express'
+import morgan from 'morgan'
+import cors from 'cors'
+import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
+import { router as authRouter } from './routes/auth'
+import { router as apiRouter } from './routes/api'
+import { prisma } from './services/prisma'
+import passport from 'passport'
+
+const app = express()
+app.use(helmet())
+app.use(cors({ origin: process.env.WEB_ORIGIN?.split(',') ?? ['http://localhost:5173'], credentials: true }))
+app.use(express.json())
+app.use(cookieParser())
+app.use(morgan('dev'))
+app.use(passport.initialize())
+
+app.get('/health', (_req, res) => res.json({ ok: true }))
+app.use('/auth', authRouter)
+app.use('/api', apiRouter)
+
+async function main() {
+  // Ensure DB is reachable before starting server
+  await prisma.$connect()
+  const port = Number(process.env.PORT || 4000)
+  app.listen(port, () => {
+    console.log(`API listening on http://localhost:${port}`)
+  })
+}
+
+main().catch((err) => {
+  console.error('Failed to start server:', err)
+  process.exit(1)
+})
+
