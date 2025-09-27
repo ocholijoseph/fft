@@ -1,0 +1,109 @@
+You are tasked with building a Family Finance Expense Tracker Web App with a modern, responsive UI and AI-powered financial insights. Follow these specifications closely:
+
+1. General Features
+
+The application must allow Google Login (OAuth2) for authentication and user management.
+
+The UI should follow modern design principles: clean layouts, soft shadows, rounded corners, grid-based sections, and responsive design (desktop, tablet, mobile).
+
+Use TailwindCSS or a similar modern styling library for consistency.
+
+All user data must be stored securely in a backend database (PostgreSQL or MongoDB).
+
+2. User Profiles
+
+There are three distinct user roles, each with its own permissions and restrictions:
+
+Father (Primary Account Holder)
+
+Full visibility of all expenses (Father, Mother, and Child).
+
+Can set budgets for categories (e.g., groceries, education, entertainment).
+
+Can generate and view family-wide spending reports.
+
+Mother (Secondary Account Holder)
+
+Full visibility of all expenses (Father, Mother, and Child).
+
+Can track and edit her own expenses.
+
+Can add or review child’s expenses.
+
+Child (Restricted Account)
+
+Can log in and record personal expenses.
+
+Can only view their own expense history and trends.
+
+Cannot access Father’s or Mother’s expense data.
+
+3. Expense Tracking
+
+Each user can log expenses with fields: amount, category, description, date/time.
+
+Categories should include common family spending areas (food, transport, bills, education, entertainment, healthcare, savings).
+
+Expenses should be stored with a reference to the user profile.
+
+4. AI Integration
+
+Implement an AI module that analyzes expenses and provides:
+
+Personalized spending insights (e.g., “You spent 30% more on groceries this month than last month”).
+
+Family-level financial tips (e.g., “Cutting down restaurant spending could save $150/month”).
+
+Trend visualization (charts/graphs showing expense growth, savings potential).
+
+Use charts and visualizations (e.g., Recharts, Chart.js, or D3.js) for expense trends.
+
+5. Dashboard & UI
+
+Each user should have a personal dashboard:
+
+Father & Mother: Family-wide + personal overview.
+
+Child: Only personal overview.
+
+Dashboard widgets:
+
+Monthly expense summary.
+
+AI-generated financial tip.
+
+Category breakdown (pie chart or bar chart).
+
+Spending trend over time (line graph).
+
+6. Security & Restrictions
+
+Ensure role-based access control:
+
+Child cannot access Father/Mother expenses.
+
+Father and Mother can see all expenses.
+
+Store credentials and session tokens securely.
+
+7. Tech Stack Recommendation
+
+Frontend: React + TailwindCSS.
+
+Backend: Node.js/Express (or Django/FastAPI).
+
+Database: PostgreSQL (structured financial data).
+
+Authentication: Google OAuth2.0.
+
+AI Integration: OpenAI API or a local ML model for expense analysis.
+
+8. Deliverables
+
+A full-stack implementation with separate frontend and backend folders.
+
+Database schema for handling multiple users and expenses.
+
+Sample seeded data for testing (Father, Mother, Child).
+
+A deployment-ready Docker setup.
