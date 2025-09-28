@@ -1,5 +1,4 @@
 import { PrismaClient, UserRole, ExpenseCategory, BudgetPeriod } from '@prisma/client';
-import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 

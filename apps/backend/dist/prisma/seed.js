@@ -1,47 +1,151 @@
-import { PrismaClient, Role } from '@prisma/client';
-const prisma = new PrismaClient();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
 async function main() {
-    const father = await prisma.user.upsert({
-        where: { email: 'father@example.com' },
-        update: {},
-        create: { email: 'father@example.com', name: 'Father', role: Role.FATHER }
+    console.log('🌱 Starting database seeding...');
+    // Create a family
+    const family = await prisma.family.create({
+        data: {
+            name: 'The Smith Family',
+        },
     });
-    const mother = await prisma.user.upsert({
-        where: { email: 'mother@example.com' },
-        update: {},
-        create: { email: 'mother@example.com', name: 'Mother', role: Role.MOTHER }
+    console.log(`✅ Created family: ${family.name}`);
+    // Create users with different roles
+    const father = await prisma.user.create({
+        data: {
+            email: 'father@family.com',
+            name: 'John Smith',
+            role: client_1.UserRole.FATHER,
+            familyId: family.id,
+            googleId: 'google_father_123',
+        },
     });
-    const child = await prisma.user.upsert({
-        where: { email: 'child@example.com' },
-        update: {},
-        create: { email: 'child@example.com', name: 'Child', role: Role.CHILD }
+    const mother = await prisma.user.create({
+        data: {
+            email: 'mother@family.com',
+            name: 'Jane Smith',
+            role: client_1.UserRole.MOTHER,
+            familyId: family.id,
+            googleId: 'google_mother_123',
+        },
     });
-    const categories = ['Groceries', 'Transport', 'Bills', 'Education', 'Entertainment', 'Healthcare'];
-    const users = [father, mother, child];
-    const now = new Date();
-    const expenses = [];
-    for (const user of users) {
-        for (let m = 0; m < 5; m++) {
-            for (let i = 0; i < 6; i++) {
-                const createdAt = new Date(now.getFullYear(), now.getMonth() - (4 - m), Math.floor(Math.random() * 27) + 1);
-                expenses.push({
-                    amount: Math.round((Math.random() * 200 + 20) * 100) / 100,
-                    category: categories[i],
-                    description: `${categories[i]} expense`,
-                    userId: user.id,
-                    createdAt
-                });
-            }
-        }
+    const child = await prisma.user.create({
+        data: {
+            email: 'child@family.com',
+            name: 'Tommy Smith',
+            role: client_1.UserRole.CHILD,
+            familyId: family.id,
+            googleId: 'google_child_123',
+        },
+    });
+    console.log(`✅ Created users: ${father.name}, ${mother.name}, ${child.name}`);
+    // Create sample expenses
+    const expenses = [
+        {
+            userId: father.id,
+            amount: 150.50,
+            category: client_1.ExpenseCategory.FOOD,
+            description: 'Weekly grocery shopping',
+            date: new Date('2025-01-20'),
+        },
+        {
+            userId: father.id,
+            amount: 75.00,
+            category: client_1.ExpenseCategory.TRANSPORT,
+            description: 'Gas for car',
+            date: new Date('2025-01-19'),
+        },
+        {
+            userId: mother.id,
+            amount: 200.00,
+            category: client_1.ExpenseCategory.BILLS,
+            description: 'Electricity bill',
+            date: new Date('2025-01-18'),
+        },
+        {
+            userId: mother.id,
+            amount: 45.00,
+            category: client_1.ExpenseCategory.ENTERTAINMENT,
+            description: 'Movie tickets',
+            date: new Date('2025-01-17'),
+        },
+        {
+            userId: child.id,
+            amount: 25.00,
+            category: client_1.ExpenseCategory.ENTERTAINMENT,
+            description: 'Video game purchase',
+            date: new Date('2025-01-16'),
+        },
+        {
+            userId: child.id,
+            amount: 15.00,
+            category: client_1.ExpenseCategory.FOOD,
+            description: 'School lunch',
+            date: new Date('2025-01-15'),
+        },
+    ];
+    for (const expense of expenses) {
+        await prisma.expense.create({
+            data: expense,
+        });
     }
-    await prisma.expense.createMany({ data: expenses });
-    await prisma.budget.upsert({ where: { category: 'Groceries' }, update: { limit: 500 }, create: { category: 'Groceries', limit: 500 } });
-    await prisma.budget.upsert({ where: { category: 'Entertainment' }, update: { limit: 200 }, create: { category: 'Entertainment', limit: 200 } });
-    console.log('Seeded users, expenses, and budgets');
+    console.log(`✅ Created ${expenses.length} sample expenses`);
+    // Create sample budgets (Father role only)
+    const budgets = [
+        {
+            familyId: family.id,
+            category: client_1.ExpenseCategory.FOOD,
+            amount: 600.00,
+            period: client_1.BudgetPeriod.MONTHLY,
+        },
+        {
+            familyId: family.id,
+            category: client_1.ExpenseCategory.TRANSPORT,
+            amount: 300.00,
+            period: client_1.BudgetPeriod.MONTHLY,
+        },
+        {
+            familyId: family.id,
+            category: client_1.ExpenseCategory.BILLS,
+            amount: 800.00,
+            period: client_1.BudgetPeriod.MONTHLY,
+        },
+        {
+            familyId: family.id,
+            category: client_1.ExpenseCategory.ENTERTAINMENT,
+            amount: 200.00,
+            period: client_1.BudgetPeriod.MONTHLY,
+        },
+        {
+            familyId: family.id,
+            category: client_1.ExpenseCategory.EDUCATION,
+            amount: 500.00,
+            period: client_1.BudgetPeriod.MONTHLY,
+        },
+    ];
+    for (const budget of budgets) {
+        await prisma.budget.create({
+            data: budget,
+        });
+    }
+    console.log(`✅ Created ${budgets.length} sample budgets`);
+    console.log('🎉 Database seeding completed successfully!');
+    console.log('\n📊 Sample Data Summary:');
+    console.log(`- Family: ${family.name}`);
+    console.log(`- Users: Father (${father.email}), Mother (${mother.email}), Child (${child.email})`);
+    console.log(`- Expenses: ${expenses.length} sample transactions`);
+    console.log(`- Budgets: ${budgets.length} monthly budget categories`);
+    console.log('\n🔐 Test Credentials:');
+    console.log('- Father: father@family.com (FATHER role)');
+    console.log('- Mother: mother@family.com (MOTHER role)');
+    console.log('- Child: child@family.com (CHILD role)');
 }
-main().catch(e => {
-    console.error(e);
+main()
+    .catch((e) => {
+    console.error('❌ Seeding failed:', e);
     process.exit(1);
-}).finally(async () => {
+})
+    .finally(async () => {
     await prisma.$disconnect();
 });
